@@ -11,14 +11,17 @@ import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.highgui.Highgui;
+import org.opencv.highgui.VideoCapture;
 
 /**
  *
@@ -27,13 +30,28 @@ import org.opencv.highgui.Highgui;
 public class TemplateTestWindow extends javax.swing.JFrame
 {
     private Mat image;
+    private Mat frame;
+    private VideoCapture cam;
     private final ArrayList<String> imagesName;
+    private TemplateTestWindowVideoThread videoThread;
     //constructor por defecto
     public TemplateTestWindow() throws IOException
     {
         //Inicia la interface grafica. Debe llamarse primero
         initComponents();
 
+        //Cambia Look&Feel
+        try
+        {
+            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+        }
+        catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex)
+        {
+            Logger.getLogger(TemplateTestWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        SwingUtilities.updateComponentTreeUI(this);
+        pack();
+        
         /*
             IconName contiene el nombre del icono de la aplicacion. 
             Los iconos disponibles se encuentran en el directorio IconsPNG
@@ -61,6 +79,30 @@ public class TemplateTestWindow extends javax.swing.JFrame
             System.out.println(((int)(i+1))+") "+imagesName.get(i));
         }
         ShowImageLabel.setText(null);
+        
+        /*
+            Busca las cameras conectadas a la PC y las lista en el combobox
+        */
+        cam = new VideoCapture();
+        for( int cam_id=0 ; cam_id<10 ; cam_id++ )
+        {
+            if( !cam.open(cam_id) )
+                break;
+            try
+            {
+                frame = new Mat(Highgui.CV_CAP_PROP_FRAME_WIDTH,Highgui.CV_CAP_PROP_FRAME_HEIGHT,CvType.CV_8UC3);
+                cam.read(frame);
+                CameraList.addItem("Device ID: "+cam_id);
+            }
+            catch(Exception e)
+            {
+                cam.release();
+                break;
+            }
+        }
+        if( cam.isOpened() )
+            cam.release();
+        videoThread = null;
     }
     
     private BufferedImage toBufferedImage(Mat m)
@@ -85,14 +127,18 @@ public class TemplateTestWindow extends javax.swing.JFrame
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         ShowImageBtn = new javax.swing.JButton();
         ImageList = new javax.swing.JComboBox();
         jScrollPane1 = new javax.swing.JScrollPane();
         ShowImageLabel = new javax.swing.JLabel();
+        CameraList = new javax.swing.JComboBox();
+        InitVideoBtn = new javax.swing.JToggleButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("OpenCV_Java_Template");
+        getContentPane().setLayout(new java.awt.GridBagLayout());
 
         ShowImageBtn.setText("Show Image");
         ShowImageBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -100,6 +146,20 @@ public class TemplateTestWindow extends javax.swing.JFrame
                 ShowImageBtnActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        getContentPane().add(ShowImageBtn, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 224;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        getContentPane().add(ImageList, gridBagConstraints);
 
         jScrollPane1.setBorder(null);
 
@@ -107,31 +167,36 @@ public class TemplateTestWindow extends javax.swing.JFrame
         ShowImageLabel.setText("jLabel1");
         jScrollPane1.setViewportView(ShowImageLabel);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(ShowImageBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(ImageList, 0, 256, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(ShowImageBtn)
-                    .addComponent(ImageList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE)
-                .addContainerGap())
-        );
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipadx = 359;
+        gridBagConstraints.ipady = 227;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(6, 12, 12, 12);
+        getContentPane().add(jScrollPane1, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        getContentPane().add(CameraList, gridBagConstraints);
+
+        InitVideoBtn.setText("Start Video");
+        InitVideoBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                InitVideoBtnActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        getContentPane().add(InitVideoBtn, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -141,6 +206,28 @@ public class TemplateTestWindow extends javax.swing.JFrame
         image = Highgui.imread((String) ImageList.getItemAt(ImageList.getSelectedIndex()));
         ShowImageLabel.setIcon(new ImageIcon(toBufferedImage(image)));    
     }//GEN-LAST:event_ShowImageBtnActionPerformed
+
+    private void InitVideoBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_InitVideoBtnActionPerformed
+        // TODO add your handling code here:
+        if( InitVideoBtn.isSelected() )
+        {
+            InitVideoBtn.setText("Stop Video");
+            CameraList.setEnabled(false);
+            ShowImageBtn.setEnabled(false);
+            ImageList.setEnabled(false);
+            cam.open(CameraList.getSelectedIndex());
+            videoThread = new TemplateTestWindowVideoThread(cam,ShowImageLabel,1);
+            videoThread.start();
+        }
+        else
+        {
+            videoThread.TerminateThread();
+            InitVideoBtn.setText("Start Video");
+            CameraList.setEnabled(true);
+            ShowImageBtn.setEnabled(true);
+            ImageList.setEnabled(true);
+        }
+    }//GEN-LAST:event_InitVideoBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -183,7 +270,9 @@ public class TemplateTestWindow extends javax.swing.JFrame
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox CameraList;
     private javax.swing.JComboBox ImageList;
+    private javax.swing.JToggleButton InitVideoBtn;
     private javax.swing.JButton ShowImageBtn;
     private javax.swing.JLabel ShowImageLabel;
     private javax.swing.JScrollPane jScrollPane1;

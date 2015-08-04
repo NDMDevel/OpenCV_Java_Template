@@ -38,7 +38,6 @@ public class OpenCV_Java_Template
         if( args.length == 1 )  //hay argumentos en la linea de comandos?
             if( args[0].equals("--run-test") )  //el primer arg es --run-test?
                 RunTemplateTest();  //correr el test
-        
         //TODO User code goes here:
         
     }
