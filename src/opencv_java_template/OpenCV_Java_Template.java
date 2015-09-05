@@ -5,8 +5,11 @@
  */
 package opencv_java_template;
 
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.opencv.core.*;
 
 
@@ -25,8 +28,9 @@ public class OpenCV_Java_Template
      * java -jar OpenCV_Java_Template.jar --run-test
      * 
      * Para detalles del test, ver metodo RunTemplateTest().
+     * @throws java.io.IOException
      */
-    public static void main(String[] args) 
+    public static void main(String[] args) throws IOException 
     {
         /**
          * Chequea los argumentos de la linea de comando, si esta presente
@@ -42,7 +46,7 @@ public class OpenCV_Java_Template
         
     }
     
-    private static void RunTemplateTest()
+    private static void RunTemplateTest() throws IOException
     {
         /**
          * RunTemplateTest:
@@ -99,8 +103,11 @@ public class OpenCV_Java_Template
         //mensaje de confirmacion
         System.out.println("---> dll/so loaded.");
 
-        //Inicia la interface grafica que lee y muestra todos las imagenes *.jpg
-        //disponibles en el directorio de trabajo:
-        TemplateTestWindow.main(null);
+            //Inicia la interface grafica que lee y muestra todos las imagenes *.jpg
+            //disponibles en el directorio de trabajo:
+            TemplateTestWindow win = new TemplateTestWindow();
+            win.setVisible(true);
+            //win.dispose();
+            //TemplateTestWindow.main(null);
     }
 }

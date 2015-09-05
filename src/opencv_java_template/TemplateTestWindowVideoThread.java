@@ -23,10 +23,10 @@ import org.opencv.highgui.VideoCapture;
  */
 public class TemplateTestWindowVideoThread extends Thread
 {
-    private int fps;
+    private final int fps;
     private boolean exit;
-    private JLabel imshow;
-    private VideoCapture cam;
+    private final JLabel imshow;
+    private final VideoCapture cam;
     public TemplateTestWindowVideoThread(VideoCapture cam,JLabel lab,int fps)
     {
         this.cam = cam;
@@ -58,6 +58,7 @@ public class TemplateTestWindowVideoThread extends Thread
     {
         exit = true;
     }
+    @Override
     public synchronized void run()
     {
         Mat frame = new Mat(Highgui.CV_CAP_PROP_FRAME_WIDTH,Highgui.CV_CAP_PROP_FRAME_HEIGHT,CvType.CV_8UC3);

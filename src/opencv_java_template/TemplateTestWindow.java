@@ -6,6 +6,8 @@
 package opencv_java_template;
 
 import java.awt.Image;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
@@ -52,11 +54,23 @@ public class TemplateTestWindow extends javax.swing.JFrame
         SwingUtilities.updateComponentTreeUI(this);
         pack();
         
+        //Agrega windowClosing handler para terminar (por la fuerza) el Thread
+        addWindowListener(new WindowAdapter(){
+            @Override
+            public void windowClosing(WindowEvent e)
+            {
+                // close sockets, etc
+                cam.release();
+                videoThread.TerminateThread();
+            }
+        });
+
+        
         /*
             IconName contiene el nombre del icono de la aplicacion. 
             Los iconos disponibles se encuentran en el directorio IconsPNG
         */
-        String IconName = "Smart2.png";
+        String IconName = "Utilities2.png";
         Image img = ImageIO.read(getClass().getResource("IconsPNG/"+IconName));
         setIconImage(img);  //carga el icono en la aplicacion
         
