@@ -60,8 +60,10 @@ public class TemplateTestWindow extends javax.swing.JFrame
             public void windowClosing(WindowEvent e)
             {
                 // close sockets, etc
-                cam.release();
-                videoThread.TerminateThread();
+                if( cam.isOpened() )
+                    cam.release();
+                if( videoThread != null )
+                    videoThread.TerminateThread();
             }
         });
 

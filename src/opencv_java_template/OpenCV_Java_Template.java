@@ -36,8 +36,9 @@ public class OpenCV_Java_Template
          * Chequea los argumentos de la linea de comando, si esta presente
          * el argumento --run-test como primer parametro, corre el test.
          * 
-         * **NOTA:  actualmente el argumento --run-test esta siempre presente,
-         *          para removerlo/cambiarlo ir a File->Project Properties->Run->Arguments.
+         * **NOTA:  para correr el test el argumento --run-test debe estar presente.
+         *          Para agreagarlo ir a File->Project Properties->Run->Arguments
+         *          y escribir "--run-test".
          */
         if( args.length == 1 )  //hay argumentos en la linea de comandos?
             if( args[0].equals("--run-test") )  //el primer arg es --run-test?
@@ -103,11 +104,8 @@ public class OpenCV_Java_Template
         //mensaje de confirmacion
         System.out.println("---> dll/so loaded.");
 
-            //Inicia la interface grafica que lee y muestra todos las imagenes *.jpg
-            //disponibles en el directorio de trabajo:
-            TemplateTestWindow win = new TemplateTestWindow();
-            win.setVisible(true);
-            //win.dispose();
-            //TemplateTestWindow.main(null);
+        //Inicia la interface grafica que lee y muestra todos las imagenes *.jpg
+        //disponibles en el directorio de trabajo:
+        TemplateTestWindow.main(null);
     }
 }

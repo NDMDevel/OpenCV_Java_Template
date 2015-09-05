@@ -1,8 +1,8 @@
 *************************************************************************
 *************************************************************************
-*****************************               *****************************
-*****************************  README FILE  *****************************
-*****************************               *****************************
+*****************************                        *******************************
+*****************************  README FILE  *******************************
+*****************************                        *******************************
 *************************************************************************
 *************************************************************************
 
@@ -32,10 +32,9 @@ redistribuibles.)
 Este proyecto ademas de ser un Template, incluye un Test que prueba el
 correcto funcionamiento y configuracion del proyecto.
 El Test se ejecuta cuando el primer argumento de la linea de comando es
-"--run-test" (sin comillas). Netbeans por defecto incluye este
-argumento en la linea de comando por lo que el Test esta habilitado por
-defecto. Para dejar de correr el Test, ir a las propiedades de
-proyecto -> Run -> Arguments y borrar el argumento --run-test.
+"--run-test" (sin comillas). Netbeans NO incluye este argumento por defecto
+en la linea de comando por lo que el Test esta deshabilitado. Para habilitarlo,
+ir a las propiedades de proyecto -> Run -> Arguments y escribir "--run-test".
 
 El Test es opcional y pensado para la primer etapa de
 desarrollo/depuracion del proyecto las veces de punto de partida, por lo
@@ -44,7 +43,9 @@ que se lo puede remover/modificar.
 	3.1) Descripcion del Test de prueba:
 	El Test, al correr, genera una interface grafica que lee (desde
 	el directorio raiz) todas las imagenes con extension .jpg y las
-	muestra en pantalla usando OpenCV.
+	muestra en pantalla usando OpenCV. Tambien registra todas las
+	camaras conectadas a la PC y permite capturar video desde cualquiera
+	de ellas.
 
 	3.2) Corriendo el Test de prueba desde la linea de comando:
 	Al compilar el proyecto, Netbeans genera automaticamente el
